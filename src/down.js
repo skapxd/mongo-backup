@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { getDb } = require("./db");
 const { pathData } = require("./path-data");
+const { EJSON } = require('bson');
 
 const { existsSync, mkdirSync } = fs;
 const { writeFile } = fs.promises;
@@ -26,7 +27,7 @@ const down = async (db) => {
 
     const filePath = path.join(dirName, collection.namespace + ".json");
 
-    const data = JSON.stringify(arr, null, 2)
+    const data = EJSON.stringify(arr)
 
     await writeFile(filePath, data, { flag: "w" });
 

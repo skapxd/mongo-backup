@@ -4,6 +4,7 @@ const { join } = require("node:path");
 const { ObjectId } = require("mongodb");
 const { getDb } = require("./db");
 const { pathData } = require("./path-data");
+const { EJSON } = require('bson');
 
 /**
  * @param {import('mongodb').Db} db
@@ -25,7 +26,7 @@ const up = async (db) => {
     if (!existsSync(filePath)) throw new Error(`File does not exist\n${filePath}`);
 
     const text = readFileSync(filePath, "utf-8");
-    const json = JSON.parse(text);
+    const json = EJSON.parse(text);
     if (json.length === 0) continue;
     await db
       .createCollection(collectionName)
