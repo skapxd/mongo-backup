@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/mongodb": "4.0.7",
+    "adm-zip": "^0.5.14",
     "dotenv": "16.4.5",
     "mongodb": "6.8.0"
   }

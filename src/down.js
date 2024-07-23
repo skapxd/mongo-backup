@@ -4,6 +4,8 @@ const path = require("node:path");
 const { getDb } = require("./db");
 const { pathData } = require("./path-data");
 const { EJSON } = require('bson');
+const { rm } = require("node:fs/promises");
+const AdmZip = require("adm-zip");
 
 const { existsSync, mkdirSync } = fs;
 const { writeFile } = fs.promises;
@@ -14,7 +16,9 @@ const { writeFile } = fs.promises;
 const down = async (db) => {
   const collections = await db.collections();
 
-  for (const collection of collections) {
+  await rm(pathData, { recursive: true });
+
+  for (const collection of  collections) {
     const time1 = performance.now()
 
     const arr = await collection.find().toArray();
@@ -37,11 +41,46 @@ const down = async (db) => {
   }
 };
 
+function generarNombreBackup() {
+  const ahora = new Date();
+  const dia = ahora.getDate().toString().padStart(2, '0');
+  const mes = (ahora.getMonth() + 1).toString().padStart(2, '0'); // Los meses comienzan desde 0
+  const ano = ahora.getFullYear().toString().slice(-2); // Obtiene los últimos 2 dígitos del año
+  const horas = ahora.getHours().toString().padStart(2, '0');
+  const minutos = ahora.getMinutes().toString().padStart(2, '0');
+  const segundos = ahora.getSeconds().toString().padStart(2, '0');
+
+  return `${dia}-${mes}-${ano}--${horas}-${minutos}-${segundos}.zip`;
+}
+
+const createZip = async () => {
+  const zip = new AdmZip()
+  const files = fs.readdirSync(pathData);
+
+  for (const file of files) {
+    const filePath = path.join(pathData, file);
+    zip.addLocalFile(filePath);
+  }
+
+  const backupDir = path.join(__dirname, 'backup')
+
+  if (!existsSync(backupDir)) {
+    mkdirSync(backupDir, { recursive: true });
+  }
+
+  const zipAsBuffer = await zip.toBufferPromise()
+
+  const zipPath = path.join(backupDir, generarNombreBackup())
+  await writeFile(zipPath, zipAsBuffer);
+}
+
 async function main() {
   try {
     const db = await getDb();
 
     await down(db);
+
+    await createZip()
   } catch (error) {
     console.error(error);
   }
