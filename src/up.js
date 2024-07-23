@@ -18,8 +18,8 @@ const up = async (db) => {
   );
 
   for (const collection of collections) {
+    const time1 = performance.now()
     const collectionName = collection.split(".")[1];
-    console.time(collectionName);
 
     const filePath = join(dirName, collection)
     if (!existsSync(filePath)) throw new Error(`File does not exist\n${filePath}`);
@@ -58,7 +58,9 @@ const up = async (db) => {
         )
       );
 
-    console.timeEnd(collectionName);
+      const time2 = performance.now()
+      const time = ((time2 - time1) / 1000).toFixed(2);
+      console.log(`${collectionName} in ${time} seconds`);
   }
 };
 

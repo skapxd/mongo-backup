@@ -14,7 +14,7 @@ const down = async (db) => {
   const collections = await db.collections();
 
   for (const collection of collections) {
-    console.time(collection.collectionName);
+    const time1 = performance.now()
 
     const arr = await collection.find().toArray();
 
@@ -26,9 +26,13 @@ const down = async (db) => {
 
     const filePath = path.join(dirName, collection.namespace + ".json");
 
-    await writeFile(filePath, JSON.stringify(arr, null, 2), { flag: "wx" });
+    const data = JSON.stringify(arr, null, 2)
 
-    console.timeEnd(collection.collectionName);
+    await writeFile(filePath, data, { flag: "w" });
+
+    const time2 = performance.now()
+    const time = ((time2 - time1) / 1000).toFixed(2);
+    console.log(`${collection.collectionName} in ${time} seconds`);
   }
 };
 
