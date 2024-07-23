@@ -1,0 +1,18 @@
+{
+  "name": "mongo-backup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "up": "node ./src/up.js",
+    "down": "node ./src/down.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/mongodb": "4.0.7",
+    "dotenv": "16.4.5",
+    "mongodb": "6.8.0"
+  }
+}
